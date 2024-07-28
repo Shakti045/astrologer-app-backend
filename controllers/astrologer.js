@@ -40,23 +40,23 @@ exports.getAstrologers = async (req,res)=>{
         const sortby = {};
         switch (filters?.sortvalue) {
             case 1:
-                sortby.price = -1;
-                break;
-            case 2:
-                sortby.price = 1;
-                break;
-            case 3:
                 sortby.experience = -1;
                 break;
-            case 4:
+            case 2:
                 sortby.experience = 1;
+                break;
+            case 3:
+                sortby.price = -1;
+                break;
+            case 4:
+                sortby.price = 1;
                 break;
             case 0:
             default:
                 sortby.createdAt = -1;
                 break;
         }
-
+        sortby.createdAt = -1;
         const filter = {};
         if(Array.isArray(filters?.experties) && filters?.experties.length>0){
             filter.experties = {$in:filters.experties};
@@ -66,7 +66,7 @@ exports.getAstrologers = async (req,res)=>{
         }
 
         const skip = (page-1)*limit;
-        const astrologers = await Astrologer.find(filter,{bio:0}).skip(skip).limit(limit).sort(sortby);
+        const astrologers = await Astrologer.find(filter,{bio:0}).sort(sortby).skip(skip).limit(limit);
         const hasMore = await Astrologer.find(filter,{bio:0}).skip(skip+limit).limit(1).countDocuments()===1;
         res.status(200).json({success:true,astrologers,hasMore});
     } catch (error) {
